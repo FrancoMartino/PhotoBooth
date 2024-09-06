@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cabina de fotos - EEST N°3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-sans p-4">
+    <div class="w-full max-w-md">
+      <h1 class="text-2xl font-bold mb-4 text-center">Cabina de fotos - EEST N°3</h1>
+      <div class="flex mb-4">
+        <input type="text" id="searchKey" placeholder="Ingresa la clave de la imagen" class="flex-grow px-4 py-2 rounded-l-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button onclick="searchImage()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-r-md transition duration-300 ease-in-out">Buscar</button>
+      </div>
+      <div id="previewContainer" class="hidden flex flex-col items-center">
+        <img id="previewImage" src="" alt="Vista previa" class="max-w-full h-auto mb-4 rounded-md shadow-lg" />
+        <button id="downloadButton" onclick="downloadFoundImage()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md transition duration-300 ease-in-out">Descargar</button>
+      </div>
+    </div>
+
+    <script>
+      const url = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://drive.google.com/embeddedfolderview?id=1Psrp364ol8s8BfKUUyG9LIQbp-c8S5cN#grid");
+      let images = {};
+      let foundImageUrl = '';
+
+      async function fetchHTML() {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`¡Error HTTP! estado: ${response.status}`);
+          const data = await response.json();
+          const container = document.createElement("div");
+          container.innerHTML = data.contents;
+
+          container.querySelectorAll(".flip-entry").forEach((entry) => {
+            const title = entry.querySelector(".flip-entry-title");
+            const image = entry.querySelector("img[src='https://drive-thirdparty.googleusercontent.com/128/type/image/png']");
+            if ((title && !title.innerHTML.endsWith(".png")) || image) {
+              entry.remove();
+            } else {
+              const key = title.innerHTML.replace(".png", "");
+              const imgSrc = entry.querySelector(".flip-entry-thumb img").src.replace("=s190", "");
+              images[key] = imgSrc;
+            }
+          });
+
+          console.log(images);
+        } catch (error) {
+          console.error("Error al obtener el HTML:", error);
+        }
+      }
+
+      function searchImage() {
+        const key = document.getElementById("searchKey").value.toUpperCase().trim();
+        const previewContainer = document.getElementById("previewContainer");
+        const previewImage = document.getElementById("previewImage");
+        
+        if (images[key]) {
+          foundImageUrl = images[key];
+          previewImage.src = foundImageUrl;
+          previewContainer.classList.remove("hidden");
+        } else {
+          alert("Imagen no encontrada.");
+          previewContainer.classList.add("hidden");
+        }
+      }
+
+      function downloadFoundImage() {
+        if (foundImageUrl) {
+          downloadImage(foundImageUrl, document.getElementById("searchKey").value.toUpperCase().trim() + ".png");
+        }
+      }
+
+      function downloadImage(url, filename) {
+        fetch(url)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const a = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          })
+          .catch((error) => console.error("Error al descargar la imagen:", error));
+      }
+
+      fetchHTML();
+    </script>
+  </body>
+</html>
