@@ -24,6 +24,9 @@
       let images = {};
       let foundImageUrl = '';
 
+      console.log(url);
+      
+
       async function fetchHTML() {
         try {
           const response = await fetch(url);
@@ -33,15 +36,14 @@
           container.innerHTML = data.contents;
 
           container.querySelectorAll(".flip-entry").forEach((entry) => {
-            const title = entry.querySelector(".flip-entry-title");
-            const image = entry.querySelector("img[src='https://drive-thirdparty.googleusercontent.com/128/type/image/png']");
-            if ((title && !title.innerHTML.endsWith(".png")) || image) {
-              entry.remove();
-            } else {
-              const key = title.innerHTML.replace(".png", "");
-              const imgSrc = entry.querySelector(".flip-entry-thumb img").src.replace("=s190", "");
-              images[key] = imgSrc;
-            }
+            entry.querySelectorAll("img").forEach((element) => {
+              const title = entry.querySelector(".flip-entry-title");
+              if (
+                element.src.includes("lh3.googleusercontent.com/drive-storage/")
+              ) {
+                images[title.textContent.split(".")[0]] = element.src.replace("=s190", "");
+              }
+            });
           });
 
           console.log(images);
