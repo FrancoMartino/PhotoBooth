@@ -24,6 +24,9 @@
             Buscar
           </button>
         </div>
+        <div id="errorContainer" class="hidden mt-4 bg-red-600 text-white p-4 rounded-lg text-center">
+          Imagen no encontrada.
+        </div>
         <div id="previewContainer" class="hidden mt-6 bg-gray-800 rounded-lg shadow-lg p-4">
           <img 
             id="previewImage" 
@@ -78,14 +81,16 @@
         const key = document.getElementById("searchKey").value.toUpperCase().trim();
         const previewContainer = document.getElementById("previewContainer");
         const previewImage = document.getElementById("previewImage");
+        const errorContainer = document.getElementById("errorContainer");
         
         if (images[key]) {
           foundImageUrl = images[key];
           previewImage.src = foundImageUrl;
           previewContainer.classList.remove("hidden");
+          errorContainer.classList.add("hidden");
         } else {
-          alert("Imagen no encontrada.");
           previewContainer.classList.add("hidden");
+          errorContainer.classList.remove("hidden");
         }
       }
 
