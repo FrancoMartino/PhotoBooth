@@ -6,26 +6,50 @@
     <title>Cabina de fotos - EEST N°3</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white font-sans p-4">
-    <div class="w-full max-w-md">
-      <h1 class="text-2xl font-bold mb-4 text-center">Cabina de fotos - EEST N°3</h1>
-      <div class="flex mb-4">
-        <input type="text" id="searchKey" placeholder="Ingresa la clave de la imagen" class="flex-grow px-4 py-2 rounded-l-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <button onclick="searchImage()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-r-md transition duration-300 ease-in-out">Buscar</button>
+  <body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white font-sans">
+    <main class="flex-grow flex flex-col items-center justify-center p-4">
+      <div class="w-full max-w-sm">
+        <h1 class="text-2xl font-bold mb-6 text-center text-blue-400">Cabina de fotos - EEST N°3</h1>
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 space-y-4">
+          <input 
+            type="text" 
+            id="searchKey" 
+            placeholder="Ingresa la clave de la imagen" 
+            class="w-full px-4 py-3 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          />
+          <button 
+            onclick="searchImage()" 
+            class="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-md transition duration-300 ease-in-out font-semibold"
+          >
+            Buscar
+          </button>
+        </div>
+        <div id="previewContainer" class="hidden mt-6 bg-gray-800 rounded-lg shadow-lg p-4">
+          <img 
+            id="previewImage" 
+            src="" 
+            alt="Vista previa" 
+            class="w-full h-auto max-h-64 mb-4 rounded-md shadow-lg object-contain bg-gray-700"
+          />
+          <button 
+            id="downloadButton" 
+            onclick="downloadFoundImage()" 
+            class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 rounded-md transition duration-300 ease-in-out font-semibold"
+          >
+            Descargar
+          </button>
+        </div>
       </div>
-      <div id="previewContainer" class="hidden flex flex-col items-center">
-        <img id="previewImage" src="" alt="Vista previa" class="max-w-full h-auto mb-4 rounded-md shadow-lg" />
-        <button id="downloadButton" onclick="downloadFoundImage()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md transition duration-300 ease-in-out">Descargar</button>
-      </div>
-    </div>
+    </main>
+    
+    <footer class="text-center py-4 text-gray-400 text-sm">
+      © 2024 Franco Martino
+    </footer>
 
     <script>
       const url = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://drive.google.com/embeddedfolderview?id=1Psrp364ol8s8BfKUUyG9LIQbp-c8S5cN#grid");
       let images = {};
       let foundImageUrl = '';
-
-      console.log(url);
-      
 
       async function fetchHTML() {
         try {
@@ -38,9 +62,7 @@
           container.querySelectorAll(".flip-entry").forEach((entry) => {
             entry.querySelectorAll("img").forEach((element) => {
               const title = entry.querySelector(".flip-entry-title");
-              if (
-                element.src.includes("lh3.googleusercontent.com/drive-storage/")
-              ) {
+              if (element.src.includes("lh3.googleusercontent.com/drive-storage/")) {
                 images[title.textContent.split(".")[0]] = element.src.replace("=s190", "");
               }
             });
